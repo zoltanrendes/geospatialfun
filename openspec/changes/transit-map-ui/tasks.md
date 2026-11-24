@@ -19,6 +19,12 @@
 
 ## 4. Integration verification
 
-- [ ] 4.1 Run `yarn test` and `yarn build`. Verify search, filtering and selection initiate no application lookup requests beyond the bundled dataset, using an instrumented mocked integration test.
-- [ ] 4.2 Check desktop and mobile layouts with the full dataset, including keyboard navigation and usable map fallback. Record whether live Maps rendering was verified with an available authorised key.
-- [ ] 4.3 Add mocked cost regression checks that count script insertions and map constructor calls. Assert one of each for a successful visible view across concurrent bootstrap calls, Strict Mode replay, rerenders, mobile panel toggles, data retry and repeated search, filter, selection and overview actions. Verify failed bootstrap is attempted once, late success is ignored and Street View is disabled.
+- [x] 4.1 Run `yarn test` and `yarn build`. Verify search, filtering and selection initiate no application lookup requests beyond the bundled dataset, using an instrumented mocked integration test.
+- [x] 4.2 Check desktop and mobile layouts with the full dataset, including keyboard navigation and usable map fallback. Record whether live Maps rendering was verified with an available authorised key.
+- [x] 4.3 Add mocked cost regression checks that count script insertions and map constructor calls. Assert one of each for a successful visible view across concurrent bootstrap calls, Strict Mode replay, rerenders, mobile panel toggles, data retry and repeated search, filter, selection and overview actions. Verify failed bootstrap is attempted once, late success is ignored and Street View is disabled.
+
+## Verification notes
+
+- Vitest passed all 46 tests, including the mocked request and map construction counts. The production build passed.
+- Headless Chromium verified the production build at 1,366 and 360 pixels with all 4,726 places. The check covered keyboard selection, mobile panel controls, map fallback and one local data request.
+- Live Google Maps rendering was not verified. Browser checks intercepted all external requests.
