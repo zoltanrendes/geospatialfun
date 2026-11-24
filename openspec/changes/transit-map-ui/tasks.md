@@ -8,9 +8,9 @@
 ## 2. Maps integration
 
 
-- [ ] 2.1 Test bootstrap with a fake Google API, covering missing key, shared loading, script error, timeout and authentication failure before and after readiness. Implement the typed loader and verify the bootstrap tests pass.
-- [ ] 2.2 Test map construction and cleanup under React Strict Mode, including rerenders, filter changes and unmount during script loading. Implement stable map ownership and verify the lifecycle tests pass.
-- [ ] 2.3 Test marker visibility and highlighting, marker selection, initial framing, selection focus and overview with zero, one and multiple points. Implement keyed point updates and camera actions, then verify the mocked Maps tests pass.
+- [x] 2.1 Test bootstrap with a fake Google API, covering missing key, shared loading, script error, timeout and authentication failure before and after readiness. Implement the typed loader and verify the bootstrap tests pass.
+- [x] 2.2 Test map construction and cleanup under React Strict Mode, including rerenders, filter changes and unmount during script loading. Implement stable map ownership and verify the lifecycle tests pass.
+- [x] 2.3 Test marker visibility and highlighting, marker selection, initial framing, selection focus and overview with zero, one and multiple points. Implement keyed point updates and camera actions, then verify the mocked Maps tests pass.
 
 ## 3. Responsive transit experience
 
