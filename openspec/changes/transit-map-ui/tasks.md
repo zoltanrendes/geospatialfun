@@ -14,8 +14,8 @@
 
 ## 3. Responsive transit experience
 
-- [ ] 3.1 Write React Testing Library tests for local search and filters, selection from list and map, keyboard controls and mobile panel state. Mount the responsive map, results and details under the existing QueryClientProvider and verify the interaction tests pass.
-- [ ] 3.2 Write component tests for data loading, retryable data error, empty dataset, zero results, missing key and Maps failures. Implement each state and verify local browsing remains available when Maps fails.
+- [x] 3.1 Write React Testing Library tests for local search and filters, selection from list and map, keyboard controls and mobile panel state. Mount the responsive map, results and details under the existing QueryClientProvider and verify the interaction tests pass.
+- [x] 3.2 Write component tests for data loading, retryable data error, empty dataset, zero results, missing key and Maps failures. Implement each state and verify local browsing remains available when Maps fails.
 
 ## 4. Integration verification
 

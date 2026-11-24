@@ -9,6 +9,7 @@ interface TransitMapProps {
   selectedId: string | null;
   overview: number;
   onSelect: (id: string) => void;
+  onOverview?: () => void;
 }
 
 interface MapSession {
@@ -38,7 +39,7 @@ function frame(session: MapSession, places: readonly TransitPlace[]) {
   session.map.fitBounds(bounds, 56);
 }
 
-export function TransitMap({ apiKey, places, visiblePlaces, selectedId, overview, onSelect }: TransitMapProps) {
+export function TransitMap({ apiKey, places, visiblePlaces, selectedId, overview, onSelect, onOverview }: TransitMapProps) {
   const host = useRef<HTMLDivElement>(null);
   const selectionHandler = useRef(onSelect);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -171,6 +172,10 @@ export function TransitMap({ apiKey, places, visiblePlaces, selectedId, overview
       )}
       {configured && !failed && !session && (
         <div className="transit-map__status" role="status">Loading map…</div>
+      )}
+      {session && onOverview && (
+        <button className="transit-map__overview" type="button" onClick={onOverview}
+          disabled={visiblePlaces.length === 0}>Map overview</button>
       )}
     </div>
   );
