@@ -2,6 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { RawTransitFeatureProperties } from "../types/transit";
 import { mapFeatureToTransitPlace, mapGeoJsonToTransitPlaces } from "./transitMapper";
 
+/**
+ * Default to a usable feature so tests can isolate one invalid field at a time.
+ *
+ * @param coordinates - The raw position under test.
+ * @param properties - Overrides for the default valid properties.
+ * @param id - An optional top-level ID to test fallback order.
+ * @returns A raw point feature for mapper assertions.
+ */
 function point(coordinates: unknown, properties: RawTransitFeatureProperties = {}, id?: string) {
   return {
     type: "Feature",

@@ -12,6 +12,7 @@ button { cursor: pointer; }
 button:disabled { cursor: default; opacity: .55; }
 :focus-visible { outline: 3px solid #087c6c; outline-offset: 3px; }
 
+/* Reserve space for the header within the viewport so only the panel body scrolls. */
 .transit-explorer {
   display: grid; grid-template-rows: auto minmax(0, 1fr);
   block-size: 100dvh; max-width: 1600px; margin: auto;

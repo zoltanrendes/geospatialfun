@@ -24,6 +24,11 @@ const stop: TransitPlace = {
   ...station, id: "stop", osmId: 2, category: "bus_stop", position: { lat: 52, lng: 0 },
 };
 
+/**
+ * Observe map and layer operations without loading the Google script.
+ *
+ * @returns Fake Maps constructors and spies for lifecycle assertions.
+ */
 function fakeMaps() {
   const remove = vi.fn();
   const addListener = vi.fn((_event: string, _listener: (event: google.maps.Data.MouseEvent) => void) => ({ remove }));
@@ -89,6 +94,14 @@ it("keeps one map, updates points and only moves the camera for intended actions
   const fake = fakeMaps();
   vi.mocked(loadGoogleMaps).mockResolvedValue(fake.maps);
   const onSelect = vi.fn();
+  /**
+   * Replay state changes under Strict Mode while retaining the same mounted map.
+   *
+   * @param visible - The currently visible places.
+   * @param selectedId - The active place ID, if any.
+   * @param overview - The overview request counter.
+   * @returns The next render of the same Strict Mode test view.
+   */
   const view = (visible: TransitPlace[], selectedId: string | null, overview: number) => (
     <StrictMode>
       <TransitMap apiKey="test-key" visiblePlaces={visible}

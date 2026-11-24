@@ -8,13 +8,23 @@ declare global {
 let load: Promise<typeof google.maps> | undefined;
 const failureListeners = new Set<(error: Error) => void>();
 
-// Authentication can fail after the script reports readiness.
+/**
+ * Observe authentication failures even after the script reports readiness.
+ *
+ * @param listener - The active view's terminal failure handler.
+ * @returns An unsubscribe function for the map view's teardown.
+ */
 export function subscribeToMapsFailure(listener: (error: Error) => void) {
   failureListeners.add(listener);
   return () => { failureListeners.delete(listener); };
 }
 
-// Share the page's bootstrap outcome, including failures, to prevent automatic retries.
+/**
+ * Share the page's bootstrap outcome, including failures, to prevent automatic retries.
+ *
+ * @param apiKey - A blank browser key disables bootstrap without inserting a script.
+ * @returns The shared readiness promise, which rejects on terminal failure.
+ */
 export function loadGoogleMaps(apiKey: string): Promise<typeof google.maps> {
   const key = apiKey.trim();
   if (!key) return Promise.reject(new Error("The Google Maps key is missing."));
@@ -31,13 +41,22 @@ export function loadGoogleMaps(apiKey: string): Promise<typeof google.maps> {
     let ready = false;
     let failed = false;
 
-    // Once bootstrap settles, its timeout and script error handler are obsolete.
+    /**
+     * Stop bootstrap-only error reporting once the script settles.
+     *
+     * @returns No value. Releases bootstrap-only resources.
+     */
     function finishLoading() {
       window.clearTimeout(timeout);
       script.removeEventListener("error", onScriptError);
     }
 
-    // A terminal failure must win over a delayed callback or later caller.
+    /**
+     * Preserve the terminal result even if the script reports readiness late.
+     *
+     * @param error - The terminal bootstrap error.
+     * @returns No value. Transitions to terminal failure.
+     */
     function fail(error: Error) {
       if (failed) return;
       failed = true;
@@ -54,7 +73,11 @@ export function loadGoogleMaps(apiKey: string): Promise<typeof google.maps> {
       failureListeners.forEach((listener) => listener(error));
     }
 
-    // Route network errors through the same terminal path as authentication failures.
+    /**
+     * Treat script errors as terminal so subsequent views do not retry automatically.
+     *
+     * @returns No value. Routes the failure through the shared bootstrap path.
+     */
     function onScriptError() {
       fail(new Error("The Google Maps script could not be loaded."));
     }

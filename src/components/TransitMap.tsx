@@ -27,7 +27,15 @@ interface MapSession {
 const circle = "M -5,0 A 5,5 0 1,0 5,0 A 5,5 0 1,0 -5,0";
 const square = "M -5,-5 H 5 V 5 H -5 Z";
 
-// Share icon definitions so style callbacks need no per-feature icon allocation.
+/**
+ * Share icon definitions to avoid allocating icons during style callbacks.
+ *
+ * @param path - The reusable symbol outline.
+ * @param fillColor - The colour identifying the point kind.
+ * @param scale - The symbol size relative to its outline.
+ * @param zIndex - The priority used when markers overlap.
+ * @returns A reusable style for the point layer.
+ */
 function pointStyle(path: string, fillColor: string, scale: number, zIndex: number): google.maps.Data.StyleOptions {
   return { zIndex, icon: { path, fillColor, scale, fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 1.5 } };
 }
@@ -40,7 +48,13 @@ const pointStyles: Record<MapPointKind, google.maps.Data.StyleOptions> = {
   cluster: pointStyle(circle, "#164d46", 2.2, 2),
 };
 
-// Preserve existing features to avoid forcing Maps to redraw unchanged overlays.
+/**
+ * Reuse keyed features to avoid redrawing unchanged overlays.
+ *
+ * @param session - The session that owns the point layer.
+ * @param points - The desired overlays keyed by stable point or group ID.
+ * @returns No value. Reconciles the current layer.
+ */
 function renderPoints(session: MapSession, points: ReadonlyMap<string, MapPoint>) {
   const { features, layer } = session;
   features.forEach(({ feature }, id) => {
@@ -68,13 +82,25 @@ function renderPoints(session: MapSession, points: ReadonlyMap<string, MapPoint>
   });
 }
 
-// Use a predictable detail zoom for both selections and single-point overviews.
+/**
+ * Give selections and single-point overviews the same bounded detail zoom.
+ *
+ * @param map - The camera target from the current session.
+ * @param place - The place to centre at detail zoom.
+ * @returns No value. Issues camera commands.
+ */
 function focus({ map }: MapSession, place: TransitPlace) {
   map.panTo(place.position);
   map.setZoom(detailZoom);
 }
 
-// Coincident positions need the same bounded zoom as a single place.
+/**
+ * Treat coincident positions as one place to avoid an excessive bounds zoom.
+ *
+ * @param session - The live map and its bounds constructor.
+ * @param places - The places to frame. An empty list leaves the camera in place.
+ * @returns No value. Issues camera commands when there are places to frame.
+ */
 function frame(session: MapSession, places: readonly TransitPlace[]) {
   const first = places[0];
   if (!first) return;
@@ -98,6 +124,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
   // Let the long-lived Maps listener call the latest React selection handler.
   useLayoutEffect(() => { selectionHandler.current = onSelect; }, [onSelect]);
 
+  // Keep map construction independent of data, filters and camera commands.
   useEffect(() => {
     const element = host.current;
     if (!configured || !element) return;
@@ -106,7 +133,11 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
     let ownedSession: MapSession | undefined;
     let click: google.maps.MapsEventListener | undefined;
 
-    // Remove only the overlays and listener owned by this view.
+    /**
+     * Release owned overlays and the click listener without touching the shared bootstrap.
+     *
+     * @returns No value. Releases resources owned by the view.
+     */
     function releaseLayer() {
       click?.remove();
       click = undefined;
@@ -119,7 +150,11 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
       }
     }
 
-    // Tear down overlays even if authentication fails after initialisation.
+    /**
+     * Remove live overlays if authentication fails after initialisation.
+     *
+     * @returns No value. Cleans up overlays and shows the fallback.
+     */
     function fail() {
       if (!active) return;
       active = false;
@@ -168,7 +203,11 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
     const dense = visiblePlaces.length > densePointThreshold;
     let previousView: string | undefined;
 
-    // Skip repeated idle events when the zoom and relevant viewport are unchanged.
+    /**
+     * Reconcile overlays once per settled zoom and relevant viewport.
+     *
+     * @returns No value. Updates overlays when the view changes.
+     */
     function updatePoints() {
       if (!session) return;
       const zoom = dense ? Math.floor(map.getZoom() ?? 10) : 10;
@@ -182,6 +221,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
 
     updatePoints();
     if (!dense) return;
+    // Defer dense-layer work until the camera stops moving.
     const idle = map.addListener("idle", updatePoints);
     return () => idle.remove();
   }, [session, visiblePlaces, selectedId]);

@@ -46,6 +46,11 @@ it("shares a single bootstrap and map across retries and repeated interactions",
   } });
   const append = vi.spyOn(document.head, "append");
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  /**
+   * Retain the same query client and map host across simulated UI updates.
+   *
+   * @returns The Strict Mode explorer tree used on each render.
+   */
   const view = () => (
     <StrictMode>
       <QueryClientProvider client={client}><TransitExplorer apiKey="test-only-key" /></QueryClientProvider>

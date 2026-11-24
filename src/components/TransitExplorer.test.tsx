@@ -5,13 +5,34 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, expect, it, vi } from "vitest";
 import { TransitExplorer } from "./TransitExplorer";
 
+/**
+ * Supply raw records so UI tests also exercise the real transit mapper.
+ *
+ * @param osmId - The fixture's OSM identifier.
+ * @param name - The label displayed in results.
+ * @param category - The raw category to map.
+ * @param ref - An optional filterable reference.
+ * @returns A raw feature for the UI fixture.
+ */
 const feature = (osmId: number, name: string, category: string, ref?: string) => ({
   type: "Feature",
   geometry: { type: "Point", coordinates: [-0.2, 51.8] },
   properties: { osmId, name, category, ref },
 });
+/**
+ * Preserve the response envelope expected by the real loader.
+ *
+ * @param features - The fixture entries for the response.
+ * @returns A successful JSON response for the mocked fetch.
+ */
 const response = (features: unknown[]) => Response.json({ type: "FeatureCollection", features });
 
+/**
+ * Isolate the query cache and surface load failures without retry delays.
+ *
+ * @param apiKey - A test key for Maps bootstrap, or blank for fallback.
+ * @returns A user-event session for the mounted explorer.
+ */
 function openExplorer(apiKey = "") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(<QueryClientProvider client={client}><TransitExplorer apiKey={apiKey} /></QueryClientProvider>);

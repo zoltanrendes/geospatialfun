@@ -1,7 +1,12 @@
 import type { TransitPlace } from "../types/transit";
 import { mapGeoJsonToTransitPlaces } from "./transitMapper";
 
-// Forward cancellation so an abandoned query can stop reading the bundled asset.
+/**
+ * Load the bundled asset and preserve HTTP failures for the query's error state.
+ *
+ * @param signal - The query's cancellation signal for the request and response body.
+ * @returns The validated places from the bundled response.
+ */
 export async function loadTransitPlaces(signal: AbortSignal): Promise<TransitPlace[]> {
   const response = await fetch("/data/herts-transit.geojson", { signal });
 

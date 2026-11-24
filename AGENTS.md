@@ -40,7 +40,9 @@
 
 ## Code Comments & Documentation
 
+- Use TSDoc (`/** ... */`) blocks above non-component functions and helpers (such as type guards, parsers, mappers, filters, and utilities, e.g. `isValidCategory`), including `@param` and `@returns` when they clarify meaning or edge cases rather than repeating TypeScript types.
 - Add a brief comment explaining **why** (intent, non-obvious invariant, constraint, or edge case)—not what the code trivially does—above:
-  - Non-component functions and helpers (such as type guards, parsers, mappers, filters, and utilities, e.g. `isValidCategory`).
+  - Non-component functions and helpers.
   - Key or non-obvious blocks within components, hooks, or modules (such as performance/clustering logic, map/layer lifecycle handling, or cost-guard assumptions).
 - Keep comments concise, accurate, and aligned with the surrounding code; avoid restating obvious syntax or types.
+- For every non-component function, always write a full multi-line TSDoc (`/** ... */`) block with a summary, the rationale (**why** it exists and any performance, cost, or edge-case constraints), and explicit `@param` and `@returns` tags for every parameter and return value.

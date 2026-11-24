@@ -5,12 +5,22 @@ import type {
   TransitPlace,
 } from "../types/transit";
 
-// Keep unsupported transport types out of the filters and marker styles.
+/**
+ * Keep unsupported transport types out of the filters and marker styles.
+ *
+ * @param value - The raw category from the feature properties.
+ * @returns Whether the category is supported by the filters and marker styles.
+ */
 function isValidCategory(value: unknown): value is TransitCategory {
   return value === "train_station" || value === "bus_stop";
 }
 
-// Validate the full GeoJSON position before discarding elevation for the map.
+/**
+ * Validate the full GeoJSON position before discarding elevation for the map.
+ *
+ * @param coords - A GeoJSON longitude and latitude pair with optional elevation.
+ * @returns Whether the position is valid, including any elevation.
+ */
 function isValidCoordinates(
   coords: unknown,
 ): coords is [number, number] | [number, number, number] {
@@ -33,7 +43,12 @@ function isValidCoordinates(
   );
 }
 
-// Reject unusable features before they reach the list and point layer.
+/**
+ * Normalise each feature before it reaches the list and point layer.
+ *
+ * @param feature - The raw GeoJSON feature to normalise.
+ * @returns A transit place, or `null` if its geometry, category or OSM ID is unusable.
+ */
 export function mapFeatureToTransitPlace(
   feature: RawTransitFeature,
 ): TransitPlace | null {
@@ -77,7 +92,13 @@ export function mapFeatureToTransitPlace(
   };
 }
 
-// Fail the load for a broken envelope, but keep valid features in a usable collection.
+/**
+ * Extract valid places from the decoded response.
+ *
+ * @param data - The decoded response before collection validation.
+ * @returns An empty array when the collection contains no usable features.
+ * @throws If the GeoJSON collection envelope is invalid.
+ */
 export function mapGeoJsonToTransitPlaces(data: unknown): TransitPlace[] {
   if (!data || typeof data !== "object") {
     throw new Error("Invalid GeoJSON payload: expected an object.");

@@ -8,7 +8,13 @@ export interface TransitFilters {
 
 export const initialTransitFilters: TransitFilters = { search: "", category: "", reference: "" };
 
-// Share one local result set so the list and map apply the same filter rules.
+/**
+ * Share one local result set so the list and map apply the same filter rules.
+ *
+ * @param places - The local places available to both views.
+ * @param filters - Active constraints are combined. Empty fields impose no restriction.
+ * @returns Matching places in their input order.
+ */
 export function filterTransitPlaces(places: readonly TransitPlace[], filters: TransitFilters) {
   const search = filters.search.trim().toLowerCase();
 

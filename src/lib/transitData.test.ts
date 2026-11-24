@@ -3,7 +3,21 @@ import { loadTransitPlaces } from "./transitData";
 
 afterEach(() => vi.unstubAllGlobals());
 
+/**
+ * Keep the envelope valid while varying individual feature validity.
+ *
+ * @param features - The entries to place in the collection.
+ * @returns A valid collection envelope for the fixtures.
+ */
 const collection = (features: unknown[]) => ({ type: "FeatureCollection", features });
+/**
+ * Allow unsupported categories and invalid coordinates to reach validation.
+ *
+ * @param category - The raw category under test.
+ * @param osmId - The fixture's OSM identifier.
+ * @param coordinates - The raw coordinates, which may be invalid.
+ * @returns A raw point feature for the loader.
+ */
 const feature = (category: string, osmId: number, coordinates: unknown) => ({
   type: "Feature",
   properties: { category, osmId },

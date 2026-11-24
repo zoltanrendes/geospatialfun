@@ -12,7 +12,15 @@ export interface MapPoint {
 export const densePointThreshold = 200;
 export const detailZoom = 16;
 
-// Bound the number of drawn overlays while preserving every place in the results.
+/**
+ * Bound the number of drawn overlays while preserving every place in the results.
+ *
+ * @param places - Filtered places eligible for the point layer.
+ * @param zoom - Integer zoom used to size the grouping grid.
+ * @param selectedId - A selected place stays individually visible, even outside the viewport.
+ * @param inView - Optional viewport predicate for all other places.
+ * @returns Individual points and groups keyed for incremental updates.
+ */
 export function buildTransitMapPoints(
   places: readonly TransitPlace[],
   zoom: number,
@@ -24,7 +32,12 @@ export function buildTransitMapPoints(
   const cluster = places.length > densePointThreshold && zoom < detailZoom;
   const cells = 256 * 2 ** zoom / 64;
 
-  // Keep the place ID stable when it moves between a group and an individual marker.
+  /**
+   * Keep the place ID stable as zoom changes how it is represented.
+   *
+   * @param place - The place to show individually.
+   * @returns No value. Adds the point to the current result.
+   */
   function addPlace(place: TransitPlace) {
     points.set(place.id, {
       kind: place.id === selectedId ? `selected_${place.category}` : place.category,
