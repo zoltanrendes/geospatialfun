@@ -7,6 +7,7 @@
 ## Project Stack
 
 - **Build & Dev:** Vite, React, TypeScript
+- **Testing:** Vitest. Use `yarn test:watch` for TDD and `yarn test` for a single run.
 - **Server State & Data Fetching:** TanStack Query (`@tanstack/react-query`)
 - **Spec Workflow:** OpenSpec (`openspec.dev`)
   - When working on specs or spec-driven changes, check if OpenSpec is available via `"$OPENSPEC"`; if not, emit a clear warning and ask how to proceed before modifying spec artifacts.
