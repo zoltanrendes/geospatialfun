@@ -5,10 +5,12 @@ import type {
   TransitPlace,
 } from "../types/transit";
 
+// Keep unsupported transport types out of the filters and marker styles.
 function isValidCategory(value: unknown): value is TransitCategory {
   return value === "train_station" || value === "bus_stop";
 }
 
+// Validate the full GeoJSON position before discarding elevation for the map.
 function isValidCoordinates(
   coords: unknown,
 ): coords is [number, number] | [number, number, number] {
@@ -31,6 +33,7 @@ function isValidCoordinates(
   );
 }
 
+// Reject unusable features before they reach the list and point layer.
 export function mapFeatureToTransitPlace(
   feature: RawTransitFeature,
 ): TransitPlace | null {
@@ -43,6 +46,7 @@ export function mapFeatureToTransitPlace(
 
   const [lng, lat] = feature.geometry.coordinates;
   const { osmId } = props;
+  // A missing or unsafe OSM ID cannot provide a reliable fallback identity.
   if (typeof osmId !== "number" || !Number.isSafeInteger(osmId) || osmId <= 0) {
     return null;
   }
@@ -73,6 +77,7 @@ export function mapFeatureToTransitPlace(
   };
 }
 
+// Fail the load for a broken envelope, but keep valid features in a usable collection.
 export function mapGeoJsonToTransitPlaces(data: unknown): TransitPlace[] {
   if (!data || typeof data !== "object") {
     throw new Error("Invalid GeoJSON payload: expected an object.");

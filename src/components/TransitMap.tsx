@@ -27,6 +27,7 @@ interface MapSession {
 const circle = "M -5,0 A 5,5 0 1,0 5,0 A 5,5 0 1,0 -5,0";
 const square = "M -5,-5 H 5 V 5 H -5 Z";
 
+// Share icon definitions so style callbacks need no per-feature icon allocation.
 function pointStyle(path: string, fillColor: string, scale: number, zIndex: number): google.maps.Data.StyleOptions {
   return { zIndex, icon: { path, fillColor, scale, fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 1.5 } };
 }
@@ -39,6 +40,7 @@ const pointStyles: Record<MapPointKind, google.maps.Data.StyleOptions> = {
   cluster: pointStyle(circle, "#164d46", 2.2, 2),
 };
 
+// Preserve existing features to avoid forcing Maps to redraw unchanged overlays.
 function renderPoints(session: MapSession, points: ReadonlyMap<string, MapPoint>) {
   const { features, layer } = session;
   features.forEach(({ feature }, id) => {
@@ -66,11 +68,13 @@ function renderPoints(session: MapSession, points: ReadonlyMap<string, MapPoint>
   });
 }
 
+// Use a predictable detail zoom for both selections and single-point overviews.
 function focus({ map }: MapSession, place: TransitPlace) {
   map.panTo(place.position);
   map.setZoom(detailZoom);
 }
 
+// Coincident positions need the same bounded zoom as a single place.
 function frame(session: MapSession, places: readonly TransitPlace[]) {
   const first = places[0];
   if (!first) return;
@@ -91,6 +95,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
   const [failed, setFailed] = useState(false);
   const configured = apiKey.trim() !== "";
 
+  // Let the long-lived Maps listener call the latest React selection handler.
   useLayoutEffect(() => { selectionHandler.current = onSelect; }, [onSelect]);
 
   useEffect(() => {
@@ -101,6 +106,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
     let ownedSession: MapSession | undefined;
     let click: google.maps.MapsEventListener | undefined;
 
+    // Remove only the overlays and listener owned by this view.
     function releaseLayer() {
       click?.remove();
       click = undefined;
@@ -113,6 +119,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
       }
     }
 
+    // Tear down overlays even if authentication fails after initialisation.
     function fail() {
       if (!active) return;
       active = false;
@@ -161,6 +168,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
     const dense = visiblePlaces.length > densePointThreshold;
     let previousView: string | undefined;
 
+    // Skip repeated idle events when the zoom and relevant viewport are unchanged.
     function updatePoints() {
       if (!session) return;
       const zoom = dense ? Math.floor(map.getZoom() ?? 10) : 10;
@@ -181,6 +189,7 @@ export function TransitMap({ apiKey, visiblePlaces, selectedId, focusRequest, ov
   useEffect(() => {
     if (!session) return;
     const selected = visiblePlaces.find(({ id }) => id === selectedId);
+    // Explicit camera requests take precedence over the one-off initial framing.
     if (session.overview !== overview) {
       frame(session, visiblePlaces);
       session.framed ||= visiblePlaces.length > 0;

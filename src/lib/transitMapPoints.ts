@@ -12,6 +12,7 @@ export interface MapPoint {
 export const densePointThreshold = 200;
 export const detailZoom = 16;
 
+// Bound the number of drawn overlays while preserving every place in the results.
 export function buildTransitMapPoints(
   places: readonly TransitPlace[],
   zoom: number,
@@ -23,6 +24,7 @@ export function buildTransitMapPoints(
   const cluster = places.length > densePointThreshold && zoom < detailZoom;
   const cells = 256 * 2 ** zoom / 64;
 
+  // Keep the place ID stable when it moves between a group and an individual marker.
   function addPlace(place: TransitPlace) {
     points.set(place.id, {
       kind: place.id === selectedId ? `selected_${place.category}` : place.category,
@@ -31,6 +33,7 @@ export function buildTransitMapPoints(
     });
   }
 
+  // Grid cells use projected pixels so groups split naturally as the user zooms in.
   for (const place of places) {
     if (place.id !== selectedId && inView && !inView(place.position)) continue;
     if (place.id === selectedId || !cluster) {

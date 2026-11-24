@@ -37,3 +37,10 @@
 - Never automatically create commits, push changes, or open pull requests.
 - Only create local commits when explicitly asked.
 - Only push to remote when explicitly asked.
+
+## Code Comments & Documentation
+
+- Add a brief comment explaining **why** (intent, non-obvious invariant, constraint, or edge case)—not what the code trivially does—above:
+  - Non-component functions and helpers (such as type guards, parsers, mappers, filters, and utilities, e.g. `isValidCategory`).
+  - Key or non-obvious blocks within components, hooks, or modules (such as performance/clustering logic, map/layer lifecycle handling, or cost-guard assumptions).
+- Keep comments concise, accurate, and aligned with the surrounding code; avoid restating obvious syntax or types.

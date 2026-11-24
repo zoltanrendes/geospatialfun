@@ -8,6 +8,7 @@ export interface TransitFilters {
 
 export const initialTransitFilters: TransitFilters = { search: "", category: "", reference: "" };
 
+// Share one local result set so the list and map apply the same filter rules.
 export function filterTransitPlaces(places: readonly TransitPlace[], filters: TransitFilters) {
   const search = filters.search.trim().toLowerCase();
 

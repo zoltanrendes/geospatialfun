@@ -31,11 +31,13 @@ export function TransitExplorer({ apiKey }: { apiKey: string }) {
   const currentPage = Math.min(page, pageCount - 1);
   const offset = currentPage * pageSize;
 
+  // Repeated selection must refocus the camera even when the active ID stays the same.
   function selectPlace(id: string) {
     setSelectedId(id);
     setFocusRequest((request) => request + 1);
   }
 
+  // Reset pagination and clear details that no longer belong to the visible results.
   function updateFilters(next: TransitFilters) {
     setFilters(next);
     setPage(0);
