@@ -15,6 +15,7 @@ export function TransitExplorer({ apiKey }: { apiKey: string }) {
   const places = query.data ?? noPlaces;
   const [filters, setFilters] = useState(initialTransitFilters);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
   const [page, setPage] = useState(0);
   const [panelOpen, setPanelOpen] = useState(true);
   const [overview, setOverview] = useState(0);
@@ -29,6 +30,11 @@ export function TransitExplorer({ apiKey }: { apiKey: string }) {
   const pageCount = Math.max(1, Math.ceil(visiblePlaces.length / pageSize));
   const currentPage = Math.min(page, pageCount - 1);
   const offset = currentPage * pageSize;
+
+  function selectPlace(id: string) {
+    setSelectedId(id);
+    setFocusRequest((request) => request + 1);
+  }
 
   function updateFilters(next: TransitFilters) {
     setFilters(next);
@@ -47,8 +53,8 @@ export function TransitExplorer({ apiKey }: { apiKey: string }) {
       </header>
 
       <div className="transit-layout">
-        <TransitMap apiKey={apiKey} places={places} visiblePlaces={visiblePlaces}
-          selectedId={selected?.id ?? null} overview={overview} onSelect={setSelectedId}
+        <TransitMap apiKey={apiKey} visiblePlaces={visiblePlaces}
+          selectedId={selected?.id ?? null} focusRequest={focusRequest} overview={overview} onSelect={selectPlace}
           onOverview={() => setOverview((value) => value + 1)} />
 
         <aside className="transit-panel" aria-labelledby="results-heading">
@@ -129,7 +135,7 @@ export function TransitExplorer({ apiKey }: { apiKey: string }) {
                 <ul className="transit-results" aria-label="Transit results">
                   {visiblePlaces.slice(offset, offset + pageSize).map((place) => (
                     <li key={place.id}>
-                      <button type="button" aria-pressed={place.id === selected?.id} onClick={() => setSelectedId(place.id)}>
+                      <button type="button" aria-pressed={place.id === selected?.id} onClick={() => selectPlace(place.id)}>
                         <span className="transit-results__symbol" data-category={place.category} aria-hidden="true" />
                         <span><strong>{place.name}</strong><small>{categoryLabels[place.category]}</small></span>
                         {place.ref && <span className="transit-results__ref">{place.ref}</span>}

@@ -12,7 +12,11 @@ button { cursor: pointer; }
 button:disabled { cursor: default; opacity: .55; }
 :focus-visible { outline: 3px solid #087c6c; outline-offset: 3px; }
 
-.transit-explorer { max-width: 1600px; margin: auto; padding: 24px clamp(16px, 4vw, 56px); }
+.transit-explorer {
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  block-size: 100dvh; max-width: 1600px; margin: auto;
+  padding: 24px clamp(16px, 4vw, 56px);
+}
 .transit-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
 .transit-header__mark {
   display: grid; place-items: center; inline-size: 48px; block-size: 48px;
@@ -22,11 +26,11 @@ button:disabled { cursor: default; opacity: .55; }
 .transit-header p { color: #4e6460; margin: 5px 0 0; }
 .transit-layout {
   display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-  gap: 16px; block-size: max(560px, calc(100dvh - 112px));
+  grid-template-rows: minmax(0, 1fr); gap: 16px;
 }
 
 .transit-map {
-  grid-column: 2; grid-row: 1; position: relative; overflow: hidden; min-block-size: 270px;
+  grid-column: 2; grid-row: 1; position: relative; overflow: hidden; min-block-size: 0;
   border: 1px solid #cddbd2; border-radius: 22px; background: #dfeae0;
 }
 .transit-map__canvas { position: absolute; inset: 0; }
@@ -47,7 +51,7 @@ button:disabled { cursor: default; opacity: .55; }
 .transit-panel__heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .transit-panel h2 { margin: 0; font-size: 1.2rem; letter-spacing: -.035em; }
 .transit-panel__toggle { display: none; }
-.transit-panel__body { min-block-size: 0; overflow: auto; padding: 4px; margin: -4px; }
+.transit-panel__body { min-block-size: 0; overflow: auto; overscroll-behavior: contain; padding: 4px; margin: -4px; }
 .transit-filters {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
   border: 0; margin: 0; padding: 0; min-inline-size: 0;
@@ -89,11 +93,12 @@ button:disabled { cursor: default; opacity: .55; }
 @media (max-width: 700px) {
   .transit-explorer { padding: 14px 12px; }
   .transit-header { margin-bottom: 14px; }
-  .transit-layout { grid-template-columns: minmax(0, 1fr); block-size: auto; gap: 10px; }
-  .transit-map { grid-column: 1; block-size: clamp(270px, 48dvh, 470px); border-radius: 16px; }
+  .transit-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 10px; }
+  .transit-map { grid-column: 1; border-radius: 16px; }
   .transit-panel { grid-column: 1; grid-row: 2; padding: 12px; border-radius: 16px; }
+  .transit-panel:has(.transit-panel__body[data-expanded="true"]) { block-size: 43dvh; }
   .transit-panel__heading { margin-bottom: 0; }
   .transit-panel__toggle { display: inline-block; }
-  .transit-panel__body { max-block-size: 50dvh; margin-top: 8px; }
+  .transit-panel__body { margin-top: 8px; }
   .transit-panel__body[data-expanded="false"] { display: none; }
 }

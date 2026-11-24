@@ -25,6 +25,8 @@
 
 ## Verification notes
 
-- Vitest passed all 46 tests, including the mocked request and map construction counts. The production build passed.
-- Headless Chromium verified the production build at 1,366 and 360 pixels with all 4,726 places. The check covered keyboard selection, mobile panel controls, map fallback and one local data request.
+- Vitest passed all 49 tests, including clustering, selected-point visibility, settled zoom updates, viewport filtering and the mocked request and map construction counts. The production build passed.
+- At zoom 10 the point layer represents all 4,726 places with 61 rendered points and groups.
+- The mocked Maps integration test verifies that selecting the same result or marker after restoring the overview focuses it again without creating another map.
+- Headless Chromium verified the production build at 1,366 × 900, 1,024 × 600, 360 × 800 and 375 × 500. The page fitted within the viewport, the panel scrolled internally, and the mobile panel could collapse and reopen. The check also covered keyboard selection, map fallback and one local data request.
 - Live Google Maps rendering was not verified. Browser checks intercepted all external requests.

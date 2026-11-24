@@ -32,7 +32,7 @@ it("shares a single bootstrap and map across retries and repeated interactions",
   const constructMap = vi.fn(function () { return camera; });
   let selectMarker: ((event: { feature: { getId: () => string } }) => void) | undefined;
   const layer = {
-    add: vi.fn((options: { id: string }) => ({ getId: () => options.id })),
+    add: vi.fn((options: { id: string }) => ({ getId: () => options.id, setProperty: vi.fn() })),
     addListener: vi.fn((_event, listener: typeof selectMarker) => {
       selectMarker = listener;
       return { remove: vi.fn() };
@@ -75,6 +75,13 @@ it("shares a single bootstrap and map across retries and repeated interactions",
       await user.selectOptions(screen.getByLabelText("Category"), "train_station");
       await user.click(screen.getByRole("button", { name: /Ware Station/ }));
       await user.click(screen.getByRole("button", { name: "Map overview" }));
+      camera.panTo.mockClear();
+      await user.click(screen.getByRole("button", { name: /Ware Station/ }));
+      expect(camera.panTo).toHaveBeenCalledExactlyOnceWith({ lat: 51.8, lng: -0.2 });
+      await user.click(screen.getByRole("button", { name: "Map overview" }));
+      camera.panTo.mockClear();
+      act(() => selectMarker?.({ feature: { getId: () => "osm-node-1" } }));
+      expect(camera.panTo).toHaveBeenCalledExactlyOnceWith({ lat: 51.8, lng: -0.2 });
       await user.click(screen.getByRole("button", { name: "Clear filters" }));
     }
     expect(selectMarker).toBeTypeOf("function");
